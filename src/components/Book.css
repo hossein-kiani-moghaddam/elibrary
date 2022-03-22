@@ -1,0 +1,28 @@
+
+.book{
+  border: 1px solid gold;
+  border-radius: 3px;
+  width: 200px;
+  height: 295px;
+  color: rgb(136, 0, 21);
+  background-color: gold;
+}
+
+.book .thumbnail{
+  width: 100%;
+  height: 150px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.book .title{
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book .details{
+  font-size: 0.85em;
+}
