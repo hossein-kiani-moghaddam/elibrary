@@ -108,7 +108,6 @@ try{
 
 	echo json_encode([
 		"result" => 0,
-		"books" => booksList(eldb(), $userId)
 	]);
 }
 catch(Exception $e){

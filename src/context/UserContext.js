@@ -9,16 +9,13 @@ export const Axios = axios.create({
 });
 
 export const UserContextProvider = ({children}) => {
-	let firstRender = true;
 	const [theUser, setUser] = useState(null);
-	const [wait, setWait] = useState(false);
 
 	useEffect(() => {
 		loggedInCheck();
 	}, []);
 
 	const registerUser = async ({userName, email, password}) => {
-		setWait(true);
 		try{
 			const {data} = await Axios.post("register.php", {
 				userName,
@@ -26,11 +23,9 @@ export const UserContextProvider = ({children}) => {
 				password
 			});
 
-			setWait(false);
 			return data;
 		}
 		catch(err){
-			setWait(false);
 			return {success: 0, message: "Server Error!"};
 		}
 	}

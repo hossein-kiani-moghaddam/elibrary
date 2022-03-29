@@ -1,21 +1,18 @@
 
 import {useContext} from "react";
-import {BrowserRouter, Routes, Route, Navigate, useParams} from "react-router-dom";
+import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
 import Navigation from "./Navigation";
-import Splash from "./Splash";
-import Login from "./Login";
 import Register from "./Register";
+import Login from "./Login";
 import Home from "./Home";
 import Favorites from "./Favorites";
 import Details from "./Details";
 import Contact from "./Contact";
 import NotFound from "./NotFound";
-import {UserContext} from "../context/UserContext";
 import "bootstrap/dist/css/bootstrap.css";
 
 function App(){
-
-	const {user} = useContext(UserContext);
 
 	return (
 
@@ -24,30 +21,23 @@ function App(){
 			<Navigation />
 
 			<Routes>
-				<Route index element={<Splash />} />
+				<Route index element={<Home />} />
+				<Route path="/register" element={<Register />} />
+				<Route path="/login" element={<Login />} />
 				<Route path="/contact" element={<Contact />} />
 
-				{!user &&
-          <>
-            <Route path="/login" element={<Login />} />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </>
-        }
+				<Route element={<ProtectedRoute />}>
+					<Route path="/home" element={<Home />} />
+					<Route path="/favorites" element={<Favorites />} />
+					<Route path="/details/:bookId" element={<Details />} />
+				</Route>
 
-        {user &&
-          <>
-            <Route index element={<Home />} />
-            <Route path="/home" element={<Home />} />
-						<Route path="/login" element={<Navigate to="/home" />} />
-						<Route path="/favorites" element={<Favorites />} />
-						<Route path="/details/:bookId" element={<Details />} />
-            <Route path="/notfound" element={<NotFound />} />
-            <Route path="*" element={<Navigate to="/notfound" />} />
-          </>
-        }
+				<Route path="/notfound" element={<NotFound />} />
+				<Route path="*" element={<Navigate to="/notfound" />} />
 			</Routes>
 		</BrowserRouter>
 
 	);
 }
+
 export default App;

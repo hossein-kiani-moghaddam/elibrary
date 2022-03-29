@@ -1,5 +1,4 @@
 
-import {Container} from "react-bootstrap";
 import Home from "./Home";
 
 function Favorites(){

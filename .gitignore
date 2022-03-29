@@ -22,4 +22,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-elibrary.apfx
+/elibrary.apfx
+/public/api/vendor
+/public/books
+/public/thumbnails
+/public/api/test.php

@@ -1,12 +1,10 @@
 
-import {useState} from "react";
 import {Modal, Form, Row, Col, Button} from "react-bootstrap";
-import {Formik, ErrorMessage} from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {Axios} from "../context/UserContext";
 
 function BookModal({show, afterSave, onHide}){
-	const errors = {};
 	const BOOKFILE_SIZE = 20 * 1024 * 1024;
 	const THUMBNAIL_SIZE = 2 * 1024 * 1024;
 	const BOOKFILE_FORMATS = ["application/pdf", "text/plain", "application/epub+zip", "text/html", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
@@ -57,7 +55,7 @@ function BookModal({show, afterSave, onHide}){
 				}
 			});
 			if(data.result === 0){
-				afterSave(data.books);
+				afterSave();
 			}
 			else{ // Invalid data:
 				// Later: ...

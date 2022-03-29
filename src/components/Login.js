@@ -1,13 +1,12 @@
 
 import {useContext, useState} from "react";
-import {Link} from "react-router-dom";
+import {Navigate} from "react-router-dom";
 import {Form, FloatingLabel, Button} from "react-bootstrap";
 import {UserContext} from "../context/UserContext";
 import Watermark from "./Watermark";
-import Brand from "./Brand";
 
 function Login(){
-	const {loginUser} = useContext(UserContext);
+	const {user, loginUser} = useContext(UserContext);
 	const [redirect, setRedirect] = useState(false);
 	const [errMsg, setErrMsg] = useState(false);
 	const [formData, setFormData] = useState({
@@ -40,43 +39,44 @@ function Login(){
 	};
 
 	return (
-		<Watermark>
+		<>
+			{user &&
+				<Navigate to="/home" />
+			}
 
-			<p>&nbsp;</p>
+			{!user &&
+				<Watermark>
 
-			<div className="form-wrapper shadow-lg">
-				<h2 className="text-success mb-4">LOGIN</h2>
-				<Form className="login-form" onSubmit={handleSubmitForm}>
+					<p>&nbsp;</p>
 
-					<FloatingLabel label="Email" controlId="loginFormEmail" className="mb-3">
-						<Form.Control type="text" name="email" onChange={handleChangeInput} placeholder="Email" />
-					</FloatingLabel>
+					<div className="form-wrapper shadow-lg">
+						<h2 className="text-success mb-4">LOGIN</h2>
+						<Form className="login-form" onSubmit={handleSubmitForm}>
 
-					<FloatingLabel label="Password" controlId="loginFormPassword" className="mb-3">
-						<Form.Control type="password" name="password" onChange={handleChangeInput} placeholder="Password" />
-					</FloatingLabel>
+							<FloatingLabel label="Email" controlId="loginFormEmail" className="mb-3">
+								<Form.Control type="text" name="email" onChange={handleChangeInput} placeholder="Email" />
+							</FloatingLabel>
 
-					{errMsg && <div className="err-msg text-danger mb-3">{errMsg}</div>}
+							<FloatingLabel label="Password" controlId="loginFormPassword" className="mb-3">
+								<Form.Control type="password" name="password" onChange={handleChangeInput} placeholder="Password" />
+							</FloatingLabel>
 
-					{
-						redirect ?
-							<div className="text-info mb-3">{redirect}</div> :
-							<div className="d-grid mb-3">
-								<Button type="submit" variant="success" size="lg">Submit</Button>
-							</div>
-					}
+							{errMsg && <div className="err-msg text-danger mb-3">{errMsg}</div>}
 
-				</Form>
+							{
+								redirect ?
+									<div className="text-info mb-3">{redirect}</div> :
+									<div className="d-grid mb-3">
+										<Button type="submit" variant="success" size="lg">Submit</Button>
+									</div>
+							}
 
-				<div className="text-center">
-					<Link to="/register" style={{
-						textShadow: "1px 1px 2px white"
-					}}>
-						Register
-					</Link>
-				</div>
-			</div>
-		</Watermark>
+						</Form>
+
+					</div>
+				</Watermark>
+			}
+		</>
 	);
 }
 

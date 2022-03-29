@@ -1,7 +1,7 @@
 
 import {useState, useEffect} from "react";
 import {Container, Col, Row, Image, Button} from "react-bootstrap";
-import {useParams, useNavigate, Navigate, Link} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import {Axios} from "../context/UserContext";
 
 function Details(){
@@ -11,13 +11,14 @@ function Details(){
 
 	const navigate = useNavigate();
 
-	useEffect(async () => {
-		const {data} = await Axios.get("getBook.php", {
-			params: {
-				bookId
-			}
-		});
-		setBook(data.book);
+	useEffect(() => {
+	  const fetchData = async () => {
+			const {data} = await Axios.get("getBook.php", {
+				params: { bookId }
+			});
+			setBook(data.book);
+	  };
+	  fetchData();
 	}, [bookId]);
 
 	return (

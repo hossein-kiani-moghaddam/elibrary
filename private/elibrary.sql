@@ -22,5 +22,7 @@ CREATE TABLE Books (
 CREATE TABLE Favorites (
 	userId int(11) NOT NULL COMMENT 'کد کاربر',
 	bookId int(11) NOT NULL COMMENT 'کد کتاب',
-	PRIMARY KEY (userId, bookId)
+	PRIMARY KEY (userId, bookId),
+	FOREIGN KEY Fk_Favorites_1 (userId) REFERENCES Users (id) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY Fk_Favorites_2 (bookId) REFERENCES Books (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;

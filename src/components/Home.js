@@ -1,10 +1,9 @@
 
-import {useContext, useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import {Container, Button, ToastContainer, Toast} from "react-bootstrap";
 import {Plus} from "react-bootstrap-icons";
 import Downloader from 'js-file-downloader';
 import {Axios} from "../context/UserContext";
-import Brand from "./Brand";
 import BookModal from "./BookModal";
 import BooksList from "./BooksList";
 import {BookActions} from "../Constants";
@@ -39,26 +38,6 @@ function Home({favoritesOnly = false}){
 		catch(error){
 			console.log("error occured: ", error);
 		}
-
-		// let formData = new FormData();
-		// formData.append("bookId", bookId);
-		// formData.append("isFavorite", isFavorite);
-		// Axios.post("editFavorite.php", formData, {
-		// 	headers: {
-		// 		"Content-Type": "application/x-www-form-urlencoded"
-		// 	}
-		// })
-		// 	.then(({data}) => {
-		// 		if(data.result === 0){
-		// 			setBooks(data.books);
-		// 		}
-		// 		else{
-		// 			console.log("Some errors occured while editting favorite!");
-		// 		}
-		// 	})
-		// 	.catch(error => {
-		// 		console.log("error occured: ", error);
-		// 	});
 	}
 
 	const handleDownload = (bookId) => {
@@ -79,9 +58,12 @@ function Home({favoritesOnly = false}){
 
 	const handleShowBookModal = () => setShowBookModal(true);
 	const handleCloseBookModal = () => setShowBookModal(false);
-	const handleAfterSaveBookModal = (books) => {
+	const handleAfterSaveBookModal = async () => {
 		setShowBookModal(false);
-		setBooks(books);
+		const {data} = await Axios.get("books.php", {
+			params: { favoritesOnly }
+		});
+		setBooks(data.books);
 	};
 	const handleAction = (action, bookId) => {
 		switch(action){
@@ -104,14 +86,14 @@ function Home({favoritesOnly = false}){
 	};
 
 	useEffect(() => {
-    Axios.get("books.php", {
-			params: {
-				favoritesOnly
-			}
-		})
-      // .then(({data}) => console.log(data));
-			.then(({data}) => setBooks(data.books));
-	}, []);
+		const fetchData = async () => {
+			const {data} = await Axios.get("books.php", {
+				params: { favoritesOnly }
+			});
+			setBooks(data.books);
+		};
+		fetchData();
+	}, [favoritesOnly]);
 
 	const toast = (msg) => {
 		setToastMessage(msg);
