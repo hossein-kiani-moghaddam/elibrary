@@ -1,11 +1,12 @@
 
 import {createContext, useState, useEffect} from "react";
 import axios from "axios";
+import {API} from "../Constants";
 
 export const UserContext = createContext();
 
 export const Axios = axios.create({
-	baseURL: "http://localhost/elibrary/public/api/"
+	baseURL: API + "/"
 });
 
 export const UserContextProvider = ({children}) => {

@@ -28,10 +28,6 @@ function Register(){
 		e.preventDefault();
 
 		const data = await registerUser(formData);
-		// Temp:
-		alert("registered");
-		console.log("DATA:", data);
-		////
 		if(data.success){
 			e.target.reset();
 			setInfoMsg(data.message);
@@ -56,6 +52,9 @@ function Register(){
 
 						<Form className="register-form" onSubmit={handleSubmitForm}>
 
+							{infoMsg && <div className="info-msg text-success mb-3">{infoMsg}</div>}
+							{errMsg && <div className="err-msg text-danger mb-3">{errMsg}</div>}
+
 							<FloatingLabel label="Name" controlId="registerFormName" className="mb-3">
 								<Form.Control type="text" name="userName" onChange={handleChangeInput} placeholder="Name" />
 							</FloatingLabel>
@@ -72,14 +71,10 @@ function Register(){
 								<Form.Control type="password" name="retypePassword" onChange={handleChangeInput} placeholder="Retype Password" />
 							</FloatingLabel>
 
-							{errMsg && <div className="err-msg text-danger mb-3">{errMsg}</div>}
-
 							<div className="d-grid mb-3">
 								<Button type="submit" variant="primary" size="lg">Submit</Button>
 							</div>
 						</Form>
-
-						{infoMsg && <div className="info-msg text-success mb-3">{infoMsg}</div>}
 
 					</div>
 				</Watermark>

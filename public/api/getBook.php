@@ -9,8 +9,9 @@ require_once "lib/validate.php";
 require_once "eldb.php";
 require_once "Auth.php";
 
+require_once "setup.php";
 require_once "lib/log.php";
-$logger = new Logger("../../../temp_elibrary.log");
+$logger = new Logger(LOG_FILE);
 $logger->log("_____ start logging getBook");
 
 try{

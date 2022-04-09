@@ -7,6 +7,7 @@ import {Axios} from "../context/UserContext";
 import BookModal from "./BookModal";
 import BooksList from "./BooksList";
 import {BookActions} from "../Constants";
+import {API} from "../Constants";
 
 function Home({favoritesOnly = false}){
 	const [books, setBooks] = useState([]);
@@ -41,7 +42,7 @@ function Home({favoritesOnly = false}){
 	}
 
 	const handleDownload = (bookId) => {
-		const fileUrl = 'http://localhost/elibrary/public/api/download.php';
+		const fileUrl = API + "/download.php";
 		let params = new URLSearchParams();
 		params.append("bookId", bookId);
 

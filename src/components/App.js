@@ -21,7 +21,7 @@ function App(){
 			<Navigation />
 
 			<Routes>
-				<Route index element={<Home />} />
+				<Route index element={<Navigate to="/home" />} />
 				<Route path="/register" element={<Register />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/contact" element={<Contact />} />
@@ -32,8 +32,7 @@ function App(){
 					<Route path="/details/:bookId" element={<Details />} />
 				</Route>
 
-				<Route path="/notfound" element={<NotFound />} />
-				<Route path="*" element={<Navigate to="/notfound" />} />
+				<Route path="*" element={<NotFound />} />
 			</Routes>
 		</BrowserRouter>
 

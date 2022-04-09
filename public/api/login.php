@@ -11,8 +11,9 @@ require_once "lib/lib.php";
 require_once "lib/JwtHandler.php";
 require_once "eldb.php";
 
+require_once "setup.php";
 require_once "lib/log.php";
-$logger = new Logger("../../../temp_elibrary.log");
+$logger = new Logger(LOG_FILE);
 $logger->log("_____ start logging login");
 
 $response = [];

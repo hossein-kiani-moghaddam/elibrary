@@ -1,7 +1,7 @@
 
 import {Modal, Form, Row, Col, Button} from "react-bootstrap";
-import {Formik} from 'formik';
-import * as Yup from 'yup';
+import {Formik} from "formik";
+import * as Yup from "yup";
 import {Axios} from "../context/UserContext";
 
 function BookModal({show, afterSave, onHide}){
@@ -97,7 +97,7 @@ function BookModal({show, afterSave, onHide}){
 			          handleChange,
 			          handleBlur,
 			          handleSubmit,
-			          isSubmitting }) => (
+			          isSubmitting} ) => (
 							<Form onSubmit={handleSubmit}>
 
 								<Form.Group as={Col} controlId="bookModalFileName" className="mb-3">
@@ -116,7 +116,7 @@ function BookModal({show, afterSave, onHide}){
 									</Form.Control.Feedback>
 							  </Form.Group>
 
-								<Form.Group controlId="bookModalThumbnail" className="mb-3">
+								<Form.Group as={Col} controlId="bookModalThumbnail" className="mb-3">
 							    <Form.Label>Cover</Form.Label>
 							    <Form.Control
 										name="thumbnail"

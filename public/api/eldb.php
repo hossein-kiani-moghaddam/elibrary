@@ -6,12 +6,11 @@ require_once APP_ROOT . "/lib/db.php";
 function eldb(){
 	static $mysqli = NULL;
 
-	// Only once connect to db:
+	// Everytime; return the same connection:
 	if(!$mysqli){
 		$mysqli = connectDb(INI_FILE);
 	}
 
-	// Later return the same connection:
 	return $mysqli;
 }
 
