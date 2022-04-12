@@ -2,7 +2,7 @@
 function Watermark({children, ...rest}){
 	return (
 		<div className="watermark" {...rest} style={{
-			height: "100%",
+			minHeight: "100%",
 			backgroundImage: "url('/images/banner.jpg')",
 		  backgroundRepeat: "no-repeat",
 		  backgroundPosition: "center center",

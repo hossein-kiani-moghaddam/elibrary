@@ -47,10 +47,10 @@ function Login(){
 			{!user &&
 				<Watermark>
 
-					<p>&nbsp;</p>
+					<div>&nbsp;</div>
 
 					<div className="form-wrapper shadow-lg">
-						<h2 className="text-success mb-4">LOGIN</h2>
+						<h2 className="text-success mb-4" style={{"textShadow": "1px 1px 1px white"}}>LOGIN</h2>
 						<Form className="login-form" onSubmit={handleSubmitForm}>
 
 							<FloatingLabel label="Email" controlId="loginFormEmail" className="mb-3">
