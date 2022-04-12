@@ -28,7 +28,15 @@ function Register(){
 
 		retypePassword: Yup.string()
 		.required("Retype Password is required")
-		.min(6, "Retype Password can't be smaller than 6 characters!"),
+		.min(6, "Retype Password can't be smaller than 6 characters!")
+    .test(
+      'equal',
+      'Passwords do not match!',
+      function(v) { // Don't use arrow functions
+        const ref = Yup.ref('password');
+        return v === this.resolve(ref);
+      }
+    )
 
 	});
 
@@ -112,10 +120,11 @@ function Register(){
 											onBlur={handleBlur}
 											isInvalid={ !!touched.userName && !!errors.userName }
 											placeholder="Username" />
+
+										<Form.Control.Feedback type="invalid">
+											{errors.userName}
+										</Form.Control.Feedback>
 									</FloatingLabel>
-									<Form.Control.Feedback type="invalid">
-										{errors.userName}
-									</Form.Control.Feedback>
 
 									<FloatingLabel label="Email" controlId="registerFormEmail" className="mb-3">
 										<Form.Control
@@ -126,10 +135,11 @@ function Register(){
 											onBlur={handleBlur}
 											isInvalid={ !!touched.email && !!errors.email }
 											placeholder="Email" />
+
+										<Form.Control.Feedback type="invalid">
+											{errors.email}
+										</Form.Control.Feedback>
 									</FloatingLabel>
-									<Form.Control.Feedback type="invalid">
-										{errors.email}
-									</Form.Control.Feedback>
 
 									<FloatingLabel label="Password" controlId="registerFormPassword" className="mb-3">
 										<Form.Control
@@ -140,10 +150,11 @@ function Register(){
 											onBlur={handleBlur}
 											isInvalid={ !!touched.password && !!errors.password }
 											placeholder="Password" />
+
+										<Form.Control.Feedback type="invalid">
+											{errors.password}
+										</Form.Control.Feedback>
 									</FloatingLabel>
-									<Form.Control.Feedback type="invalid">
-										{errors.password}
-									</Form.Control.Feedback>
 
 									<FloatingLabel label="Retype Password" controlId="registerFormRetypePassword" className="mb-3">
 										<Form.Control
@@ -154,10 +165,11 @@ function Register(){
 											onBlur={handleBlur}
 											isInvalid={ !!touched.retypePassword && !!errors.retypePassword }
 											placeholder="Retype Password" />
+
+										<Form.Control.Feedback type="invalid">
+											{errors.retypePassword}
+										</Form.Control.Feedback>
 									</FloatingLabel>
-									<Form.Control.Feedback type="invalid">
-										{errors.retypePassword}
-									</Form.Control.Feedback>
 
 									<div className="d-grid mb-3">
 										<Button type="submit" variant="primary" size="lg" disabled={isSubmitting}>
