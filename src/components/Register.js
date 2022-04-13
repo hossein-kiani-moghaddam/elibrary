@@ -15,19 +15,20 @@ function Register(){
 	const validationSchema = Yup.object().shape({
 
 		userName: Yup.string()
-		.required("Username is required")
+		.required("Username is required.")
 	  .max(50, "Username can't be longer than 50 characters!"),
 
 		email: Yup.string()
-		.required("Email is required")
+		.required("Email is required.")
+		.email("Invalid email format!")
 		.max(100, "Email can't be longer than 100 characters!"),
 
 		password: Yup.string()
-		.required("Password is required")
+		.required("Password is required.")
 		.min(6, "Password can't be smaller than 6 characters!"),
 
 		retypePassword: Yup.string()
-		.required("Retype Password is required")
+		.required("Retype Password is required.")
 		.min(6, "Retype Password can't be smaller than 6 characters!")
     .test(
       'equal',
@@ -76,7 +77,7 @@ function Register(){
 					<div>&nbsp;</div>
 
 					<div className="form-wrapper shadow-lg">
-						<h2 className="text-primary mb-4" style={{"textShadow": "1px 1px 1px white"}}>REGISTER</h2>
+						<h2 className="text-success mb-4" style={{"textShadow": "1px 1px 1px white"}}>REGISTER</h2>
 
 						<Formik
 			        initialValues={{
@@ -98,7 +99,7 @@ function Register(){
 				          handleSubmit,
 									handleReset,
 				          isSubmitting} ) => (
-								<Form onSubmit={handleSubmit}>
+								<Form noValidate onSubmit={handleSubmit}>
 
 									{infoMsg &&
 										<Alert variant="success">
@@ -119,7 +120,8 @@ function Register(){
 											onChange={handleChange}
 											onBlur={handleBlur}
 											isInvalid={ !!touched.userName && !!errors.userName }
-											placeholder="Username" />
+											placeholder="Username"
+										/>
 
 										<Form.Control.Feedback type="invalid">
 											{errors.userName}
@@ -134,7 +136,8 @@ function Register(){
 											onChange={handleChange}
 											onBlur={handleBlur}
 											isInvalid={ !!touched.email && !!errors.email }
-											placeholder="Email" />
+											placeholder="Email"
+										/>
 
 										<Form.Control.Feedback type="invalid">
 											{errors.email}
@@ -149,7 +152,8 @@ function Register(){
 											onChange={handleChange}
 											onBlur={handleBlur}
 											isInvalid={ !!touched.password && !!errors.password }
-											placeholder="Password" />
+											placeholder="Password"
+										/>
 
 										<Form.Control.Feedback type="invalid">
 											{errors.password}
@@ -164,7 +168,8 @@ function Register(){
 											onChange={handleChange}
 											onBlur={handleBlur}
 											isInvalid={ !!touched.retypePassword && !!errors.retypePassword }
-											placeholder="Retype Password" />
+											placeholder="Retype Password"
+										/>
 
 										<Form.Control.Feedback type="invalid">
 											{errors.retypePassword}
@@ -172,7 +177,7 @@ function Register(){
 									</FloatingLabel>
 
 									<div className="d-grid mb-3">
-										<Button type="submit" variant="primary" size="lg" disabled={isSubmitting}>
+										<Button type="submit" variant="success" size="lg" disabled={isSubmitting}>
 											{isSubmitting ? "Sending..." : "Submit"}
 										</Button>
 									</div>

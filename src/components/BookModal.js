@@ -98,7 +98,7 @@ function BookModal({show, afterSave, onHide}){
 			          handleBlur,
 			          handleSubmit,
 			          isSubmitting} ) => (
-							<Form onSubmit={handleSubmit}>
+							<Form noValidate onSubmit={handleSubmit}>
 
 								<Form.Group as={Col} controlId="bookModalFileName" className="mb-3">
 							    <Form.Label>File Name</Form.Label>
