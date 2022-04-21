@@ -9,8 +9,8 @@ import Watermark from "./Watermark";
 
 function Register(){
 	const {user, registerUser} = useContext(UserContext);
-	const [errMsg, setErrMsg] = useState(false);
 	const [infoMsg, setInfoMsg] = useState(false);
+	const [errMsgs, setErrMsgs] = useState(false);
 
 	const validationSchema = Yup.object().shape({
 
@@ -47,20 +47,20 @@ function Register(){
 		let msg;
 		try{
 			const data = await registerUser(values);
-			if(data.success){
-				setErrMsg(false);
-				setInfoMsg(data.message);
+			if(data.result == 0){ // Success
+				setErrMsgs(false);
+				setInfoMsg("You have successfully registered.");
 				resetForm();
 				return;
 			}
-			msg = data.message;
+			setErrMsgs(data.errors);
 		}
 		catch(e){
-			msg = e.message;
+			// Later:
+			// msg = e.message;
 		}
 
 		setInfoMsg(false);
-		setErrMsg(msg);
 
 		setSubmitting(false);
 	};
@@ -106,9 +106,16 @@ function Register(){
 											{infoMsg}
 										</Alert>
 									}
-									{errMsg &&
+									{errMsgs &&
 										<Alert variant="danger">
-											{errMsg}
+											<h5>Errors:</h5>
+											<ul>
+												{
+													Object.entries(errMsgs).map(([errKey,errValue],i) => {
+														return Object.entries(errValue).map(([key,value],j) => <li key={j}>{value}</li>)
+													})
+												}
+											</ul>
 										</Alert>
 									}
 

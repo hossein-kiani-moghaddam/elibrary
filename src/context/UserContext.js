@@ -16,12 +16,18 @@ export const UserContextProvider = ({children}) => {
 		loggedInCheck();
 	}, []);
 
-	const registerUser = async ({userName, email, password}) => {
+	const registerUser = async ({userName, email, password, retypePassword}) => {
 		try{
-			const {data} = await Axios.post("register.php", {
-				userName,
-				email,
-				password
+			let formData = new FormData();
+			formData.append("userName", userName);
+			formData.append("email", email);
+			formData.append("password", password);
+			formData.append("retypePassword", retypePassword);
+
+			const {data} = await Axios.post("register.php", formData, {
+				headers: {
+					"Content-Type": "x-www-form-urlencoded"
+				}
 			});
 
 			return data;

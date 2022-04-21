@@ -1,5 +1,6 @@
 {
-    "require": {
-        "firebase/php-jwt": "^6.0"
-    }
+  "require": {
+    "firebase/php-jwt": "^6.0",
+    "rakit/validation": "^1.4"
+  }
 }
