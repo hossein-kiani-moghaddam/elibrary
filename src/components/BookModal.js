@@ -1,5 +1,6 @@
 
-import {Modal, Form, Row, Col, Button} from "react-bootstrap";
+import {useState} from "react";
+import {Modal, Form, Row, Col, Button, Alert} from "react-bootstrap";
 import {Formik} from "formik";
 import * as Yup from "yup";
 import {Axios} from "../context/UserContext";
@@ -9,6 +10,8 @@ function BookModal({show, afterSave, onHide}){
 	const THUMBNAIL_SIZE = 2 * 1024 * 1024;
 	const BOOKFILE_FORMATS = ["application/pdf", "text/plain", "application/epub+zip", "text/html", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
 	const THUMBNAIL_FORMATS = ["image/png", "image/bmp", "image/jpeg", "image/gif", "image/svg+xml"];
+
+	const [errMsgs, setErrMsgs] = useState(false);
 
 	const validationSchema = Yup.object().shape({
 
@@ -22,7 +25,7 @@ function BookModal({show, afterSave, onHide}){
 		.test("FILE_FORMAT", "Only supports: png, bmp, jpg, jpeg, gif, svg", value => !value || THUMBNAIL_FORMATS.includes(value.type)),
 
 		title: Yup.string()
-		.required("Title is required")
+		// .required("Title is required!")
 	  .max(100, "Title can't be longer than 100 characters!"),
 
 		publication: Yup.string()
@@ -33,16 +36,17 @@ function BookModal({show, afterSave, onHide}){
 
 		pagesCount: Yup.number()
 		.required("Pages count is required!")
-		.min(1, "Pages count should be greater or equal to 1"),
+		.min(1, "Pages count should be greater or equal to 1!"),
 
 		pubYear: Yup.number()
 		.required("Publication year is required!")
-		.min(1000, "Publication year should be between 1000 - 9999")
-		.max(9999, "Publication year should be between 1000 - 9999"),
+		.min(1000, "Publication year should be between 1000 - 9999!")
+		.max(9999, "Publication year should be between 1000 - 9999!"),
 	});
 
-	const submitForm = async (values, {setSubmitting}) => {
+	const submitForm = async (values, {setSubmitting, resetForm}) => {
 		setSubmitting(true);
+
 		const formData = new FormData();
 		for(const key in values){
 			formData.append(key, values[key]);
@@ -54,23 +58,40 @@ function BookModal({show, afterSave, onHide}){
 					"Content-Type": "multipart/form-data"
 				}
 			});
-			if(data.result === 0){
+			// Temp:
+			console.log(data);
+			////
+			if(data.result === 0){ // Success:
+				hideMessages();
+				resetForm();
 				afterSave();
 			}
 			else{ // Invalid data:
-				// Later: ...
-				console.log("invalid data");
+				setErrMsgs(data.errors);
 			}
 		}
 		catch(e){
+			// Later:
 			console.log("error in saving book!", e);
 		}
+
 		setSubmitting(false);
+	};
+
+	const handleClose = () => {
+		hideMessages();
+		if(onHide){
+			onHide();
+		}
+	};
+
+	const hideMessages = () => {
+		setErrMsgs(false);
 	};
 
 	return (
 		<>
-      <Modal show={show} onHide={onHide} backdrop="static" keyboard={false} scrollable={true}>
+      <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false} scrollable={true}>
         <Modal.Header className="text-white bg-primary" closeButton closeVariant="white">
           <Modal.Title>New eBook</Modal.Title>
         </Modal.Header>
@@ -100,6 +121,19 @@ function BookModal({show, afterSave, onHide}){
 			          isSubmitting} ) => (
 							<Form noValidate onSubmit={handleSubmit}>
 
+								{errMsgs &&
+									<Alert variant="danger">
+										<h5>Errors:</h5>
+										<ul>
+											{
+												Object.entries(errMsgs).map(([errKey,errValue],i) => {
+													return Object.entries(errValue).map(([key,value],j) => <li key={j}>{value}</li>)
+												})
+											}
+										</ul>
+									</Alert>
+								}
+
 								<Form.Group as={Col} controlId="bookModalFileName" className="mb-3">
 							    <Form.Label>File Name</Form.Label>
 							    <Form.Control
@@ -111,6 +145,7 @@ function BookModal({show, afterSave, onHide}){
 										onBlur={handleBlur}
 										isInvalid={ !!touched.fileName && !!errors.fileName }
 									/>
+
 									<Form.Control.Feedback type='invalid'>
 										{ errors.fileName }
 									</Form.Control.Feedback>
@@ -127,6 +162,7 @@ function BookModal({show, afterSave, onHide}){
 										onBlur={handleBlur}
 										isInvalid={ !!touched.thumbnail && !!errors.thumbnail }
 									/>
+
 									<Form.Control.Feedback type='invalid'>
 										{ errors.thumbnail }
 									</Form.Control.Feedback>
@@ -142,6 +178,7 @@ function BookModal({show, afterSave, onHide}){
 										onBlur={handleBlur}
 										isInvalid={ !!touched.title && !!errors.title }
 									/>
+
 									<Form.Control.Feedback type='invalid'>
 										{errors.title}
 									</Form.Control.Feedback>
@@ -158,6 +195,7 @@ function BookModal({show, afterSave, onHide}){
 											onBlur={handleBlur}
 											isInvalid={ !!touched.publication && !!errors.publication }
 										/>
+
 										<Form.Control.Feedback type='invalid'>
 											{errors.publication}
 										</Form.Control.Feedback>
@@ -174,6 +212,7 @@ function BookModal({show, afterSave, onHide}){
 											isInvalid={ !!touched.authors && !!errors.authors }
 											placeholder="Comma separated list"
 										/>
+
 										<Form.Control.Feedback type='invalid'>
 											{errors.authors}
 										</Form.Control.Feedback>
@@ -191,6 +230,7 @@ function BookModal({show, afterSave, onHide}){
 											onBlur={handleBlur}
 											isInvalid={ !!touched.pagesCount && !!errors.pagesCount }
 										/>
+
 										<Form.Control.Feedback type='invalid'>
 											{ errors.pagesCount }
 										</Form.Control.Feedback>
@@ -206,6 +246,7 @@ function BookModal({show, afterSave, onHide}){
 											onBlur={handleBlur}
 											isInvalid={ !!touched.pubYear && !!errors.pubYear }
 										/>
+
 										<Form.Control.Feedback type='invalid'>
 											{ errors.pubYear }
 										</Form.Control.Feedback>
@@ -216,7 +257,7 @@ function BookModal({show, afterSave, onHide}){
 									<Button className="me-3" type="submit" variant="primary" disabled={isSubmitting}>
 										{isSubmitting ? "Saving..." : "Save"}
 									</Button>
-									<Button variant="outline-secondary" onClick={onHide}>Close</Button>
+									<Button variant="outline-secondary" onClick={handleClose}>Close</Button>
 								</div>
 							</Form>
 			      )}

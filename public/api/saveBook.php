@@ -5,24 +5,26 @@ header("Access-Control-Allow-Methods: POST");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
+require_once "vendor/autoload.php";
+require_once "setup.php";
 require_once "lib/lib.php";
-require_once "lib/validate.php";
+require_once "lib/validator.php";
+require_once "lib/HkmExceptions.php";
 require_once "eldb.php";
 require_once "Auth.php";
 
-require_once "setup.php";
 require_once "lib/log.php";
 $logger = new Logger(LOG_FILE);
 $logger->log("_____ start logging saveBook");
 
 try{
-  $errors = [
-		"save" => [],
-    "etc" => [],
-  ];
 
   if($_SERVER['REQUEST_METHOD'] != "POST"){
-		throw new Exception("Page Not Found!");
+    throw new HkmResponseException(1, [
+			"etc" => [
+				"etc1" => "Page not found!"
+			],
+		]);
 	}
 
   $userId = NULL;
@@ -36,90 +38,91 @@ try{
     throw new Exception("You must login before adding new books!");
   }
 
-	$data = [];
-	$data['title'] = validateInput(INPUT_POST, "title", "string", $errors['save']);
-	$data['publication'] = validateInput(INPUT_POST, "publication", "string", $errors['save'], ["optional" => true]);
-	$data['authors'] = validateInput(INPUT_POST, "authors", "string", $errors['save'], ["optional" => true]);
-	$data['pagesCount'] = validateInput(INPUT_POST, "pagesCount", "int", $errors['save'], ["min_range" => 1]);
-	$data['pubYear'] = validateInput(INPUT_POST, "pubYear", "int", $errors['save'], ["min_range" => 1000, "max_range" => 9999]);
+  $validator = rakitValidator(eldb());
 
-	if(hasError($errors)){
-		throw new Exception();
-	}
+  $validation = $validator->make($_POST + $_FILES, [
+    "fileName" => "required|uploaded_file:0,20M,pdf,txt,epub,html,doc,docx",
+    "thumbnail" => "uploaded_file:0,500K,png,bmp,jpg,jpeg,gif,svg",
+    "title" => "required|max:100",
+    "publication" => "max:50",
+    "authors" => "max:80",
+    "pagesCount" => "required|integer|min:1",
+    "pubYear" => "required|integer|min:1000|max:9999",
+  ]);
 
-  eldb()->begin_transaction();
-	$data['id'] = insertIntoTable(eldb(), "Books", $data);
+  $validation->validate();
 
-  // Prepare book file:
-  $validExtensions = ["pdf", "txt", "epub", "html", "doc", "docx"];
-  $booksDir = APP_ROOT . "/../books";
+  if($validation->fails()){
+    throw new HkmResponseException(1, $validation->errors()->toArray());
+  }
 
-  if(!empty($_FILES['fileName']['name'])){
+  $data = arrayOnly($_POST, ["title", "publication", "authors", "pagesCount", "pubYear"]);
+
+  try{
+    eldb()->begin_transaction();
+  	$data['id'] = insertIntoTable(eldb(), "Books", $data);
+
+    // Prepare book file:
+    $booksDir = APP_ROOT . "/../books";
+
     $ext = strtolower(pathinfo($_FILES['fileName']['name'], PATHINFO_EXTENSION));
     $tmpFileName = $_FILES['fileName']['tmp_name'];
     $bookFileName = strtolower("$data[id].$ext");
 
-    // check valid format:
-    if(!in_array($ext, $validExtensions)){
-      throw new Exception("Invalid file format. (Allowable formats: " . implode(", ", $validExtensions) . ")");
+    forceDir($booksDir);
+    if(move_uploaded_file($tmpFileName, $booksDir . "/" . $bookFileName)){
+      $data['fileName'] = $bookFileName;
     }
     else{
-			forceDir($booksDir);
-      if(move_uploaded_file($tmpFileName, $booksDir . "/" . $bookFileName)){
-        $data['fileName'] = $bookFileName;
-      }
-      else{
-        throw new Exception("Error in uploading fileName.");
-      }
+      throw new Exception("Error in uploading fileName.");
     }
 
-		updateTable(eldb(), "Books", arrayOnly($data, ["id"]), arrayOnly($data, ["fileName"]));
-  }
-  else{
-    $errors['save']['fileName'] = "notset";
-    throw new Exception();
-  }
+    updateTable(eldb(), "Books", arrayOnly($data, ["id"]), arrayOnly($data, ["fileName"]));
 
-	// Prepare thumbnail file:
-  $validExtensions = ["png", "bmp", "jpg", "jpeg", "gif", "svg"];
-  $thumbnailsDir = APP_ROOT . "/../thumbnails";
+  	// Prepare thumbnail file:
+    $thumbnailsDir = APP_ROOT . "/../thumbnails";
 
-  if(!empty($_FILES['thumbnail']['name'])){
-    $ext = strtolower(pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION));
-    $tmpFileName = $_FILES['thumbnail']['tmp_name'];
-    $thumbFileName = strtolower("$data[id].$ext");
+    if(!empty($_FILES['thumbnail']['name'])){
+      $ext = strtolower(pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION));
+      $tmpFileName = $_FILES['thumbnail']['tmp_name'];
+      $thumbFileName = strtolower("$data[id].$ext");
 
-    // check valid format:
-    if(!in_array($ext, $validExtensions)){
-      throw new Exception("Invalid file format. (Allowable formats: " . implode(", ", $validExtensions) . ")");
-    }
-    else{
-			forceDir($thumbnailsDir);
+      forceDir($thumbnailsDir);
       if(move_uploaded_file($tmpFileName, $thumbnailsDir . "/" . $thumbFileName)){
         $data['thumbnail'] = $thumbFileName;
       }
       else{
         throw new Exception("Error in uploading thumbnail.");
       }
-    }
 
-		updateTable(eldb(), "Books", arrayOnly($data, ["id"]), arrayOnly($data, ["thumbnail"]));
+  		updateTable(eldb(), "Books", arrayOnly($data, ["id"]), arrayOnly($data, ["thumbnail"]));
+    }
+    eldb()->commit();
   }
-  eldb()->commit();
+  catch(mysqli_sql_exception $se){
+    eldb()->rollback();
+    throw new HkmResponseException(1, [
+      "etc" => [
+        "etc1" => "SQL Error!"
+      ]
+    ]);
+  }
 
 	echo json_encode([
 		"result" => 0,
+    "data" => $data,
 	]);
 }
+catch(HkmResponseException $re){
+  echo json_encode($re->getResponse());
+}
 catch(Exception $e){
-  eldb()->rollback();
-
-	if($e->getMessage() !== ""){
-		$errors['etc']['Error ' . ($e->getCode())] = $e->getMessage();
-	}
-
-  echo json_encode([
-    "result" => 1,
-    "errors" => $errors,
-  ]);
+	echo json_encode([
+		"result" => 1,
+		"errors" => [
+			"etc" => [
+				"etc1" => "Server error!",
+			],
+		],
+	]);
 }

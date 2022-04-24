@@ -12,7 +12,6 @@ require_once "lib/validator.php";
 require_once "lib/HkmExceptions.php";
 require_once "eldb.php";
 
-require_once "setup.php";
 require_once "lib/log.php";
 $logger = new Logger(LOG_FILE);
 $logger->log("_____ start logging register");
@@ -21,7 +20,9 @@ try{
 
 	if($_SERVER['REQUEST_METHOD'] != "POST"){
 		throw new HkmResponseException(1, [
-			"etc" => ["Page not found!"],
+			"etc" => [
+				"etc1" => "Page not found!"
+			],
 		]);
 	}
 
@@ -31,13 +32,13 @@ try{
     "userName" => "required|unique:Users,userName",
     "email" => "required|email|unique:Users,email",
     "password" => "required|min:6",
-    "retypePassword" => "required|same:password"
+    "retypePassword" => "required|same:password",
 	]);
 
 	$validation->validate();
 
 	if($validation->fails()){
-		throw new HkmResponseException(2, $validation->errors()->toArray());
+		throw new HkmResponseException(1, $validation->errors()->toArray());
 	}
 
 	$data = arrayOnly($_POST, ["userName", "email"]);
@@ -47,27 +48,31 @@ try{
 		$data['hashPassword'] = password_hash($_POST['password'], PASSWORD_BCRYPT);
 		$data['id'] = insertIntoTable(eldb(), "Users", $data);
 		eldb()->commit();
-
-		echo json_encode([
-			"result" => 0,
-			"data" => $data
-		]);
 	}
 	catch(mysqli_sql_exception $se){
 		eldb()->rollback();
-		throw new HkmResponseException(3, [
-			"etc" => ["SQL Error!"]
+		throw new HkmResponseException(1, [
+			"etc" => [
+				"etc1" => "SQL Error!"
+			]
 		]);
 	}
+
+	echo json_encode([
+		"result" => 0,
+		"data" => $data
+	]);
 }
 catch(HkmResponseException $re){
   echo json_encode($re->getResponse());
 }
 catch(Exception $e){
 	echo json_encode([
-		"result" => 9,
+		"result" => 1,
 		"errors" => [
-			"etc" => ["Server error!"],
+			"etc" => [
+				"etc1" => "Server error!",
+			],
 		],
 	]);
 }

@@ -51,9 +51,10 @@ function Register(){
 				setErrMsgs(false);
 				setInfoMsg("You have successfully registered.");
 				resetForm();
-				return;
 			}
-			setErrMsgs(data.errors);
+			else{
+				setErrMsgs(data.errors);
+			}
 		}
 		catch(e){
 			// Later:
@@ -61,7 +62,6 @@ function Register(){
 		}
 
 		setInfoMsg(false);
-
 		setSubmitting(false);
 	};
 

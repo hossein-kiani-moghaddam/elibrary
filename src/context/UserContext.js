@@ -38,11 +38,20 @@ export const UserContextProvider = ({children}) => {
 	}
 
 	const loginUser = async ({email, password}) => {
-		const {data} = await Axios.post("login.php", {
-			email,
-			password
+		let formData = new FormData();
+		formData.append("email", email);
+		formData.append("password", password);
+
+		const {data} = await Axios.post("login.php", formData, {
+			headers: {
+				"Content-Type": "x-www-form-urlencoded"
+			}
 		});
-		if(data.success && data.data.token){
+		// Temp:
+		console.log(data);
+		////
+
+		if(data.result == 0 && data.data.token){
 			localStorage.setItem("loginToken", data.data.token);
 			loggedInCheck();
 		}

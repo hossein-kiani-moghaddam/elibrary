@@ -9,7 +9,7 @@ function Contact(){
 				South Khorasan<br />
 				Boshrooyeh<br />
 				Imam Khomeini Boulevard<br />
-				Tel: 05632789212<br />
+				Tel: 056-32789212<br />
 				Mobile: 09151370795<br />
 				Website: <a href="http://www.persianstudio.ir" target="_blank" rel="noreferrer">http://www.persianstudio.ir</a><br />
 				Email: <a href="mailto:hkiani20@gmail.com">hkiani20@gmail.com</a><br />
