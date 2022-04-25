@@ -9,7 +9,6 @@ import Watermark from "./Watermark";
 
 function Login(){
 	const {user, loginUser} = useContext(UserContext);
-	const [redirect, setRedirect] = useState(false);
 	const [infoMsg, setInfoMsg] = useState(false);
 	const [errMsgs, setErrMsgs] = useState(false);
 
@@ -29,10 +28,9 @@ function Login(){
 	const submitForm = async (values, {setSubmitting, resetForm}) => {
 		setSubmitting(true);
 
-		let msg;
 		try{
 			const data = await loginUser(values);
-			if(data.result == 0){ // Success
+			if(data.result === 0){ // Success
 				setErrMsgs(false);
 				setInfoMsg("You have successfully logged in.")
 				resetForm();
@@ -43,7 +41,7 @@ function Login(){
 		}
 		catch(e){
 			// Later:
-			// msg = e.message;
+			console.log(e.message);
 		}
 
 		setInfoMsg(false);
@@ -134,16 +132,11 @@ function Login(){
 										</Form.Control.Feedback>
 									</FloatingLabel>
 
-									{
-										redirect ?
-											<Alert variant="info">{redirect}</Alert> :
-
-											<div className="d-grid mb-3">
-												<Button type="submit" variant="success" size="lg" disabled={isSubmitting}>
-													{isSubmitting ? "Sending..." : "Submit"}
-												</Button>
-											</div>
-									}
+									<div className="d-grid mb-3">
+										<Button type="submit" variant="success" size="lg" disabled={isSubmitting}>
+											{isSubmitting ? "Sending..." : "Submit"}
+										</Button>
+									</div>
 
 								</Form>
 				      )}

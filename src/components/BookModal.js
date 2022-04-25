@@ -25,7 +25,7 @@ function BookModal({show, afterSave, onHide}){
 		.test("FILE_FORMAT", "Only supports: png, bmp, jpg, jpeg, gif, svg", value => !value || THUMBNAIL_FORMATS.includes(value.type)),
 
 		title: Yup.string()
-		// .required("Title is required!")
+		.required("Title is required!")
 	  .max(100, "Title can't be longer than 100 characters!"),
 
 		publication: Yup.string()
@@ -58,9 +58,6 @@ function BookModal({show, afterSave, onHide}){
 					"Content-Type": "multipart/form-data"
 				}
 			});
-			// Temp:
-			console.log(data);
-			////
 			if(data.result === 0){ // Success:
 				hideMessages();
 				resetForm();

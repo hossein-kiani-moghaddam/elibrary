@@ -1,5 +1,4 @@
 
-import {useContext} from "react";
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import Navigation from "./Navigation";

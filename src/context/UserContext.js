@@ -12,6 +12,22 @@ export const Axios = axios.create({
 export const UserContextProvider = ({children}) => {
 	const [theUser, setUser] = useState(null);
 
+	const loggedInCheck = async () => {
+		const loginToken = localStorage.getItem("loginToken");
+		Axios.defaults.headers.common['Authorization'] = `Bearer ${loginToken}`;
+		if(loginToken){
+			const {data} = await Axios.get("getUser.php");
+
+			if(data.success && data.user){
+				const user = data.user;
+				// Later:
+				if(!theUser || (theUser.userName !== user.userName || theUser.email !== user.email)){
+					setUser(user);
+				}
+			}
+		}
+	}
+
 	useEffect(() => {
 		loggedInCheck();
 	}, []);
@@ -47,11 +63,8 @@ export const UserContextProvider = ({children}) => {
 				"Content-Type": "x-www-form-urlencoded"
 			}
 		});
-		// Temp:
-		console.log(data);
-		////
 
-		if(data.result == 0 && data.data.token){
+		if(data.result === 0 && data.data.token){
 			localStorage.setItem("loginToken", data.data.token);
 			loggedInCheck();
 		}
@@ -62,22 +75,6 @@ export const UserContextProvider = ({children}) => {
 		localStorage.removeItem("loginToken");
 		setUser(null);
 	};
-
-	const loggedInCheck = async () => {
-		const loginToken = localStorage.getItem("loginToken");
-		Axios.defaults.headers.common['Authorization'] = `Bearer ${loginToken}`;
-		if(loginToken){
-			const {data} = await Axios.get("getUser.php");
-
-			if(data.success && data.user){
-				const user = data.user;
-				// Later:
-				if(!theUser || (theUser.userName !== user.userName || theUser.email !== user.email)){
-					setUser(user);
-				}
-			}
-		}
-	}
 
 	return (
 		<UserContext.Provider value={{user: theUser, registerUser, loginUser, logoutUser}}>

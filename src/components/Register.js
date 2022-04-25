@@ -44,10 +44,9 @@ function Register(){
 	const submitForm = async (values, {setSubmitting, resetForm}) => {
 		setSubmitting(true);
 
-		let msg;
 		try{
 			const data = await registerUser(values);
-			if(data.result == 0){ // Success
+			if(data.result === 0){ // Success
 				setErrMsgs(false);
 				setInfoMsg("You have successfully registered.");
 				resetForm();
@@ -58,7 +57,7 @@ function Register(){
 		}
 		catch(e){
 			// Later:
-			// msg = e.message;
+			console.log(e.message);
 		}
 
 		setInfoMsg(false);
